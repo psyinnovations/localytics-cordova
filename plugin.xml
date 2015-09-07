@@ -8,18 +8,34 @@
     <js-module src="www/Localytics.js" name="Localytics">
         <clobbers target="Localytics" />
     </js-module>
-    
+
     <engines>
         <engine name="cordova" version=">=3.0.0" />
     </engines>
 
     <platform name="ios">
-
+        <preference name="APP_ID" />
         <config-file target="config.xml" parent="/*">
             <feature name="LocalyticsPlugin">
-                <param name="ios-package" value="LocalyticsPlugin"/>
+                <param name="ios-package" value="LocalyticsPlugin" onload="true"/>
             </feature>
         </config-file>
+
+        <config-file target="*-Info.plist" parent="LocalyticsAppKey">
+            <string>$APP_ID</string>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+          <array>
+            <dict>
+              <key>CFBundleURLSchemes</key>
+              <array>
+                <string>amp$APP_ID</string>
+              </array>
+            </dict>
+          </array>
+        </config-file>
+
         <source-file src="src/ios/libLocalytics.a" framework="true"/>
         <header-file src="src/ios/Localytics.h" />
         <header-file src="src/ios/LocalyticsPlugin.h" />
@@ -30,7 +46,7 @@
         <framework src="SystemConfiguration.framework" />
         <framework src="AdSupport.framework" weak="true" />
         <framework src="CoreLocation.framework" weak="true" />
-        
+
     </platform>
 
     <platform name="android">
