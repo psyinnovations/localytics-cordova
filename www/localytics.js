@@ -88,6 +88,24 @@ Localytics.prototype.isOptedOut = function (successCallback) {
 	cordova.exec(successCallback, null, "LocalyticsPlugin", "isOptedOut", []);
 }
 
+/*******************
+ * Analytics - Standard events
+ ******************/
+Localytics.prototype.tagCustomerRegistered = function (customer, method, attributes) {
+	cordova.exec(null, null, "LocalyticsPlugin", "tagCustomerRegistered", [customer, method, attributes]);
+}
+
+Localytics.prototype.tagCustomerLoggedIn = function (customer, method, attributes) {
+	cordova.exec(null, null, "LocalyticsPlugin", "tagCustomerLoggedIn", [customer, method, attributes]);
+}
+
+Localytics.prototype.tagCustomerLoggedOut = function (attributes) {
+	cordova.exec(null, null, "LocalyticsPlugin", "tagCustomerLoggedOut", [attributes]);
+}
+
+Localytics.prototype.tagContentViewed = function (contentName, contentId, contentType, attributes) {
+	cordova.exec(null, null, "LocalyticsPlugin", "tagContentViewed", [contentName, contentId, contentType, attributes]);
+}
 
 /*******************
  * Profiles

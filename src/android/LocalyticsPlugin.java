@@ -44,6 +44,8 @@ public class LocalyticsPlugin extends CordovaPlugin {
     private static final String ERROR_UNSUPPORTED_TYPE = "Unsupported type for attribute value.";
     private static final String ERROR_INVALID_ARRAY = "Invalid array type for attribute value.";
 
+    private int sessionTimeOut = 15;
+
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
@@ -413,18 +415,10 @@ public class LocalyticsPlugin extends CordovaPlugin {
             callbackContext.success();
             return true;
         } else if (action.equals("setPushDisabled")) {
-            boolean enabled = args.getBoolean(0);
-            Localytics.setPushDisabled(enabled);
-            callbackContext.success();
+            callbackContext.error("Method removed from latest Localytics SDK");
             return true;
         } else if (action.equals("isPushDisabled")) {
-            cordova.getThreadPool().execute(new Runnable() {
-                public void run() {
-                    boolean enabled = Localytics.isPushDisabled();
-                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, enabled));
-                }
-            });
-            return true;
+            callbackContext.error("Method removed from latest Localytics SDK");
         } else if (action.equals("setTestModeEnabled")) {
             boolean enabled = args.getBoolean(0);
             Localytics.setTestModeEnabled(enabled);
@@ -468,14 +462,16 @@ public class LocalyticsPlugin extends CordovaPlugin {
             return true;
         } else if (action.equals("setSessionTimeoutInterval")) {
             int seconds = args.getInt(0);
-            Localytics.setSessionTimeoutInterval(seconds);
+            this.sessionTimeOut = seconds;
+            HashMap<String, Object> options = new HashMap<String, Object>();
+            options.put("session_timeout", seconds);
+            Localytics.setOptions(options);
             callbackContext.success();
             return true;
         } else if (action.equals("getSessionTimeoutInterval")) {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
-                    long timeout = Localytics.getSessionTimeoutInterval();
-                    callbackContext.success(Long.valueOf(timeout).toString());
+                    callbackContext.success(Long.valueOf(LocalyticsPlugin.this.sessionTimeOut).toString());
                 }
             });
             return true;

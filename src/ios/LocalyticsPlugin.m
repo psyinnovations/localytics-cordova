@@ -162,6 +162,52 @@ static NSDictionary* launchOptions;
     }];
 }
 
+#pragma mark Analytics - Standard events
+- (void)tagCustomerRegistered: (CDVInvokedUrlCommand *)command {
+    NSDictionary *customer = [command argumentAtIndex:0];
+    NSString *method = [command argumentAtIndex:1];
+    NSDictionary *attributes = [command argumentAtIndex:2];
+    
+    [Localytics tagCustomerRegistered:[LLCustomer customerWithBlock:^(LLCustomerBuilder *builder) {
+        builder.customerId = [customer valueForKey: @"customerId"];
+        builder.firstName = [customer valueForKey: @"firstName"];
+        builder.lastName = [customer valueForKey: @"lastName"];
+        builder.fullName = [customer valueForKey: @"fullName"];
+        builder.emailAddress = [customer valueForKey: @"emailAddress"];
+    }] methodName: method attributes: attributes];
+}
+
+- (void)tagCustomerLoggedIn: (CDVInvokedUrlCommand *)command {
+    NSDictionary *customer = [command argumentAtIndex:0];
+    NSString *method = [command argumentAtIndex:1];
+    NSDictionary *attributes = [command argumentAtIndex:2];
+    
+    [Localytics tagCustomerRegistered:[LLCustomer customerWithBlock:^(LLCustomerBuilder *builder) {
+        builder.customerId = [customer valueForKey: @"customerId"];
+        builder.firstName = [customer valueForKey: @"firstName"];
+        builder.lastName = [customer valueForKey: @"lastName"];
+        builder.fullName = [customer valueForKey: @"fullName"];
+        builder.emailAddress = [customer valueForKey: @"emailAddress"];
+    }] methodName: method attributes: attributes];
+}
+
+- (void)tagCustomerLoggedOut: (CDVInvokedUrlCommand *)command {
+    NSDictionary *attributes = [command argumentAtIndex:0];
+    [Localytics tagCustomerLoggedOut:attributes];
+}
+
+- (void)tagContentViewed: (CDVInvokedUrlCommand *)command {
+    NSString *contentName = [command argumentAtIndex:0];
+    NSString *contentId = [command argumentAtIndex:1];
+    NSString *contentType = [command argumentAtIndex:2];
+    NSDictionary *attributes = [command argumentAtIndex:3];
+    
+    [Localytics tagContentViewed:contentName
+                       contentId:contentId
+                     contentType:contentType
+                      attributes:attributes];
+}
+
 
 #pragma mark Profiles
 
