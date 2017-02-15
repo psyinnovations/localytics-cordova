@@ -26,6 +26,11 @@
 - (void)setOptedOut:(CDVInvokedUrlCommand *)command;
 - (void)isOptedOut:(CDVInvokedUrlCommand *)command;
 
+- (void)tagCustomerRegistered: (CDVInvokedUrlCommand *)command;
+- (void)tagCustomerLoggedIn: (CDVInvokedUrlCommand *)command;
+- (void)tagCustomerLoggedOut: (CDVInvokedUrlCommand *)command;
+- (void)tagContentViewed: (CDVInvokedUrlCommand *)command;
+
 - (void)setProfileAttribute:(CDVInvokedUrlCommand *)command;
 - (void)addProfileAttributesToSet:(CDVInvokedUrlCommand *)command;
 - (void)removeProfileAttributesFromSet:(CDVInvokedUrlCommand *)command;

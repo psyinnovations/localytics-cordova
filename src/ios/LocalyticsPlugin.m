@@ -10,7 +10,7 @@
 //
 
 #import "LocalyticsPlugin.h"
-#import "Localytics.h"
+#import <Localytics/Localytics.h>
 
 #define PROFILE_SCOPE_ORG @"org"
 #define PROFILE_SCOPE_APP @"app"
@@ -33,9 +33,7 @@ static NSDictionary* launchOptions;
 
 + (void)onDidFinishLaunchingNotification:(NSNotification *)notification {
     launchOptions = notification.userInfo;
-    if (launchOptions && launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
-        [Localytics handlePushNotificationOpened: launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]];
-    }
+    [Localytics handleNotification: launchOptions];
 }
 
 + (void)onDidRegisterForRemoteNotificationWithDeviceToken:(NSNotification *)notification {
@@ -162,6 +160,52 @@ static NSDictionary* launchOptions;
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:value];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
+}
+
+#pragma mark Analytics - Standard events
+- (void)tagCustomerRegistered: (CDVInvokedUrlCommand *)command {
+    NSDictionary *customer = [command argumentAtIndex:0];
+    NSString *method = [command argumentAtIndex:1];
+    NSDictionary *attributes = [command argumentAtIndex:2];
+    
+    [Localytics tagCustomerRegistered:[LLCustomer customerWithBlock:^(LLCustomerBuilder *builder) {
+        builder.customerId = [customer valueForKey: @"customerId"];
+        builder.firstName = [customer valueForKey: @"firstName"];
+        builder.lastName = [customer valueForKey: @"lastName"];
+        builder.fullName = [customer valueForKey: @"fullName"];
+        builder.emailAddress = [customer valueForKey: @"emailAddress"];
+    }] methodName: method attributes: attributes];
+}
+
+- (void)tagCustomerLoggedIn: (CDVInvokedUrlCommand *)command {
+    NSDictionary *customer = [command argumentAtIndex:0];
+    NSString *method = [command argumentAtIndex:1];
+    NSDictionary *attributes = [command argumentAtIndex:2];
+    
+    [Localytics tagCustomerRegistered:[LLCustomer customerWithBlock:^(LLCustomerBuilder *builder) {
+        builder.customerId = [customer valueForKey: @"customerId"];
+        builder.firstName = [customer valueForKey: @"firstName"];
+        builder.lastName = [customer valueForKey: @"lastName"];
+        builder.fullName = [customer valueForKey: @"fullName"];
+        builder.emailAddress = [customer valueForKey: @"emailAddress"];
+    }] methodName: method attributes: attributes];
+}
+
+- (void)tagCustomerLoggedOut: (CDVInvokedUrlCommand *)command {
+    NSDictionary *attributes = [command argumentAtIndex:0];
+    [Localytics tagCustomerLoggedOut:attributes];
+}
+
+- (void)tagContentViewed: (CDVInvokedUrlCommand *)command {
+    NSString *contentName = [command argumentAtIndex:0];
+    NSString *contentId = [command argumentAtIndex:1];
+    NSString *contentType = [command argumentAtIndex:2];
+    NSDictionary *attributes = [command argumentAtIndex:3];
+    
+    [Localytics tagContentViewed:contentName
+                       contentId:contentId
+                     contentType:contentType
+                      attributes:attributes];
 }
 
 
@@ -366,13 +410,14 @@ static NSDictionary* launchOptions;
 - (void)setSessionTimeoutInterval:(CDVInvokedUrlCommand *)command {
     NSNumber *timeout = [command argumentAtIndex:0];
     if (timeout) {
-        [Localytics setSessionTimeoutInterval:[timeout doubleValue]];
+        [Localytics setOptions:@{@"session_timeout": timeout}];
     }
 }
 
 - (void)getSessionTimeoutInterval:(CDVInvokedUrlCommand *)command {
     [self.commandDelegate runInBackground:^{
-        NSTimeInterval value = [Localytics sessionTimeoutInterval];
+        // FIXME: There is no way to get session timeout interval
+        NSTimeInterval value = 30;
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:value];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
