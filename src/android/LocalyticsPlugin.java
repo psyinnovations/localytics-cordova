@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.localytics.android.Customer;
 import com.localytics.android.Localytics;
 import com.localytics.android.LocalyticsActivityLifecycleCallbacks;
 
@@ -399,7 +400,116 @@ public class LocalyticsPlugin extends CordovaPlugin {
                 callbackContext.error("Expected two arguments.");
             }
             return true;
-        } else if (action.equals("registerPush")) {
+        }
+        else if (action.equals("tagCustomerRegistered")) {
+            JSONObject customer = args.getJSONObject(0);
+            String method = args.getString(1);
+
+            JSONObject attributes = null;
+            if (!args.isNull(2)) {
+                attributes = args.getJSONObject(2);
+            }
+
+            HashMap<String, String> a = null;
+            if (attributes != null && attributes.length() > 0) {
+                a = new HashMap<String, String>();
+                Iterator<?> keys = attributes.keys();
+                while (keys.hasNext()) {
+                    String key = (String)keys.next();
+                    String value = attributes.getString(key);
+                    a.put(key, value);
+                }
+            }
+
+            Localytics.tagCustomerRegistered(new Customer.Builder()
+                            .setCustomerId(customer.getString("customerId"))
+                            .setFirstName(customer.getString("firstName"))
+                            .setLastName(customer.getString("lastName"))
+                            .setFullName(customer.getString("fullName"))
+                            .setEmailAddress(customer.getString("emailAddress"))
+                            .build(),
+                    method,
+                    a
+            );
+            callbackContext.success();
+            return true;
+        }
+        else if (action.equals("tagCustomerLoggedIn")) {
+            JSONObject customer = args.getJSONObject(0);
+            String method = args.getString(1);
+            JSONObject attributes = null;
+            if (!args.isNull(2)) {
+                attributes = args.getJSONObject(2);
+            }
+
+            HashMap<String, String> a = null;
+            if (attributes != null && attributes.length() > 0) {
+                a = new HashMap<String, String>();
+                Iterator<?> keys = attributes.keys();
+                while (keys.hasNext()) {
+                    String key = (String)keys.next();
+                    String value = attributes.getString(key);
+                    a.put(key, value);
+                }
+            }
+
+            Localytics.tagCustomerLoggedIn(new Customer.Builder()
+                            .setCustomerId(customer.getString("customerId"))
+                            .setFirstName(customer.getString("firstName"))
+                            .setLastName(customer.getString("lastName"))
+                            .setFullName(customer.getString("fullName"))
+                            .setEmailAddress(customer.getString("emailAddress"))
+                            .build(),
+                    method,
+                    a
+            );
+            callbackContext.success();
+            return true;
+        }
+        else if (action.equals("tagCustomerLoggedOut")) {
+            JSONObject attributes = null;
+            if (!args.isNull(0)) {
+                attributes = args.getJSONObject(0);
+            }
+
+            HashMap<String, String> a = null;
+            if (attributes != null && attributes.length() > 0) {
+                a = new HashMap<String, String>();
+                Iterator<?> keys = attributes.keys();
+                while (keys.hasNext()) {
+                    String key = (String)keys.next();
+                    String value = attributes.getString(key);
+                    a.put(key, value);
+                }
+            }
+            Localytics.tagCustomerLoggedOut(a);
+            callbackContext.success();
+            return true;
+        }
+        else if (action.equals("tagContentViewed")) {
+            String contentName = args.getString(0);
+            String contentId = args.getString(1);
+            String contentType = args.getString(2);
+            JSONObject attributes = null;
+            if (!args.isNull(3)) {
+                attributes = args.getJSONObject(3);
+            }
+
+            HashMap<String, String> a = null;
+            if (attributes != null && attributes.length() > 0) {
+                a = new HashMap<String, String>();
+                Iterator<?> keys = attributes.keys();
+                while (keys.hasNext()) {
+                    String key = (String)keys.next();
+                    String value = attributes.getString(key);
+                    a.put(key, value);
+                }
+            }
+            Localytics.tagContentViewed(contentName, contentId, contentType, a);
+            callbackContext.success();
+            return true;
+        }
+        else if (action.equals("registerPush")) {
             String senderId = null;
 
             try {
